@@ -123,6 +123,8 @@ getAllImagesByBreed2(razaABuscar).then(imagenesDeRaza=>console.log(`Imagenes de 
  6.- Declara una función printGithubUserProfile(username) que reciba como argumento el nombre de un usuario (username), retorne {img, name} y pinte la foto y el nombre en el DOM.
 
  7. Crea una función getAndPrintGitHubUserProfile(username) que contenga una petición a la API para obtener información de ese usuario y devuelva un string que represente una tarjeta HTML como en el ejemplo, la estructura debe ser exactamente la misma:
+
+  8.- Manipulación del DOM: Crea un input de tipo texto, y un botón buscar. El usuario escribirá en el input el nombre de usuario de GitHub que quiera buscar. Después llamaremos a la función getAndPrintGitHubUserProfile(username) que se ejecute cuando se pulse el botón buscar.(Esto no se testea).
  */
 
  const urlBase2='https://api.github.com/users/'
@@ -164,4 +166,62 @@ const getGitHubUserProfile=async(userName)=>{
     
 } 
 
-getGitHubUserProfile('alenriquez96').then(usuario=>console.log(usuario.name))
+const printGithubUserProfile=async(userName)=>{
+    try {
+
+        const resp= await llamadaAPI2(userName)
+
+        if (resp.ok) {
+            const usuario= await resp.json();
+
+            /**Desestructuracion para poder "renombrar" el atributo avatar_url */
+            return {
+                ...usuario,img:usuario.avatar_url
+            }
+        }else{
+            throw (error, "No se ha podido encontrar el usuario")
+        }
+        
+
+    } catch (error) {
+        console.error("Error al obtener el perfil de usuario",error)
+        return [];
+    }
+    
+}
+
+
+const getAndPrintGitHubUserProfile=async(userName)=>{
+    try {
+
+        const resp= await llamadaAPI2(userName)
+
+        if (resp.ok) {
+            const usuario= await resp.json();
+
+            
+            return `<section><img src=`+`"${usuario.avatar_url}"`+` alt="${usuario.name}">`+`<h1>${usuario.name}</h1>`+`<p>Public repos: ${usuario.public_repos}</p></section>`
+                
+        }else{
+            throw (error, "No se ha podido encontrar el usuario")
+        }
+        
+
+    } catch (error) {
+        console.error("Error al obtener el perfil de usuario",error)
+        return [];
+    }
+    
+} 
+
+
+
+getGitHubUserProfile('alenriquez96').then((usuario) => {console.log(usuario.name)});
+printGithubUserProfile('alenriquez96').then((usuario) => {console.log(usuario.img, usuario.name);}) //QUEDA PENDIENTE PINTAR EN EL DOM
+
+getAndPrintGitHubUserProfile('alenriquez96').then((tarjetaUsuario) => {console.log(tarjetaUsuario);})
+
+
+
+
+
